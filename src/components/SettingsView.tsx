@@ -67,9 +67,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
         bio: profileData.bio,
         updatedAt: serverTimestamp()
       });
-      setStatus({ type: 'success', message: t('settings.successProfile') });
+      setStatus({ type: 'success', message: t.settings.successProfile });
     } catch (error) {
-      setStatus({ type: 'error', message: t('settings.errorProfile') });
+      setStatus({ type: 'error', message: t.settings.errorProfile });
     } finally {
       setIsSaving(false);
     }
@@ -83,9 +83,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
         notifications,
         updatedAt: serverTimestamp()
       });
-      setStatus({ type: 'success', message: t('settings.successNotif') });
+      setStatus({ type: 'success', message: t.settings.successNotif });
     } catch (error) {
-      setStatus({ type: 'error', message: t('settings.errorNotif') });
+      setStatus({ type: 'error', message: t.settings.errorNotif });
     } finally {
       setIsSaving(false);
     }
@@ -103,9 +103,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
         },
         updatedAt: serverTimestamp()
       });
-      setStatus({ type: 'success', message: t('settings.successPrefs') });
+      setStatus({ type: 'success', message: t.settings.successPrefs });
     } catch (error) {
-      setStatus({ type: 'error', message: t('settings.errorPrefs') });
+      setStatus({ type: 'error', message: t.settings.errorPrefs });
     } finally {
       setIsSaving(false);
     }
@@ -118,18 +118,18 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       window.location.href = '/';
     } catch (error) {
-      setStatus({ type: 'error', message: t('settings.errorDelete') });
+      setStatus({ type: 'error', message: t.settings.errorDelete });
       setIsSaving(false);
     }
   };
 
   const handleUpdatePassword = async () => {
     if (!newPassword) {
-      setStatus({ type: 'error', message: t('settings.errorPassword') });
+      setStatus({ type: 'error', message: t.settings.errorPassword });
       return;
     }
     if (newPassword !== confirmPassword) {
-      setStatus({ type: 'error', message: t('settings.errorPassword') }); // Or a more specific one if added
+      setStatus({ type: 'error', message: t.settings.errorPassword }); // Or a more specific one if added
       return;
     }
 
@@ -139,11 +139,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
       // In a real app, we'd use auth.updatePassword
       // For this mock, we'll just simulate success
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setStatus({ type: 'success', message: t('settings.successPassword') });
+      setStatus({ type: 'success', message: t.settings.successPassword });
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      setStatus({ type: 'error', message: t('settings.errorPassword') });
+      setStatus({ type: 'error', message: t.settings.errorPassword });
     } finally {
       setIsSaving(false);
     }
@@ -154,10 +154,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
   };
 
   const sections = [
-    { id: 'profile', label: t('settings.profile'), icon: <User className="w-5 h-5" /> },
-    { id: 'security', label: t('settings.security'), icon: <Lock className="w-5 h-5" /> },
-    { id: 'notifications', label: t('settings.notifications'), icon: <Bell className="w-5 h-5" /> },
-    { id: 'preferences', label: t('settings.preferences'), icon: <Globe className="w-5 h-5" /> },
+    { id: 'profile', label: t.settings.profile, icon: <User className="w-5 h-5" /> },
+    { id: 'security', label: t.settings.security, icon: <Lock className="w-5 h-5" /> },
+    { id: 'notifications', label: t.settings.notifications, icon: <Bell className="w-5 h-5" /> },
+    { id: 'preferences', label: t.settings.preferences, icon: <Globe className="w-5 h-5" /> },
   ];
 
   return (
@@ -210,23 +210,23 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                   className="space-y-8"
                 >
                   <div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t('settings.profileInfo')}</h3>
-                    <p className="text-slate-500">{t('settings.profileDesc')}</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.profileInfo}</h3>
+                    <p className="text-slate-500">{t.settings.profileDesc}</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.fullName')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.fullName}</label>
                       <input 
                         type="text"
                         value={profileData.displayName}
                         onChange={(e) => setProfileData(prev => ({ ...prev, displayName: e.target.value }))}
                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-brand-teal/50 focus:ring-4 focus:ring-brand-teal/5 transition-all"
-                        placeholder={t('settings.fullName')}
+                        placeholder={t.settings.fullName}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.email')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.email}</label>
                       <input 
                         type="email"
                         value={profileData.email}
@@ -235,7 +235,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.phone')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.phone}</label>
                       <input 
                         type="tel"
                         value={profileData.phone}
@@ -253,13 +253,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.bio')}</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.bio}</label>
                     <textarea 
                       value={profileData.bio}
                       onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
                       rows={4}
                       className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-brand-teal/50 focus:ring-4 focus:ring-brand-teal/5 transition-all resize-none"
-                      placeholder={t('settings.bioPlaceholder')}
+                      placeholder={t.settings.bioPlaceholder}
                     />
                   </div>
 
@@ -269,7 +269,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       loading={isSaving}
                       className="w-full sm:w-auto px-10 py-4"
                     >
-                      {t('settings.saveChanges')}
+                      {t.settings.saveChanges}
                     </PremiumButton>
                   </div>
                 </motion.div>
@@ -284,8 +284,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                   className="space-y-8"
                 >
                   <div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t('settings.securitySettings')}</h3>
-                    <p className="text-slate-500">{t('settings.securityDesc')}</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.securitySettings}</h3>
+                    <p className="text-slate-500">{t.settings.securityDesc}</p>
                   </div>
 
                   <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 flex items-start gap-4">
@@ -293,14 +293,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       <Shield className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 mb-1">{t('settings.passwordReq')}</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed">{t('settings.passwordReqDesc')}</p>
+                      <h4 className="font-bold text-slate-900 mb-1">{t.settings.passwordReq}</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed">{t.settings.passwordReqDesc}</p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.newPassword')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.newPassword}</label>
                       <div className="relative">
                         <input 
                           type={showPassword ? "text" : "password"}
@@ -319,7 +319,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.confirmPassword')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.confirmPassword}</label>
                       <input 
                         type={showPassword ? "text" : "password"}
                         value={confirmPassword}
@@ -336,7 +336,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       loading={isSaving}
                       className="w-full sm:w-auto px-10 py-4"
                     >
-                      {t('settings.updatePassword')}
+                      {t.settings.updatePassword}
                     </PremiumButton>
                   </div>
                 </motion.div>
@@ -351,16 +351,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                   className="space-y-8"
                 >
                   <div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t('settings.notifPrefs')}</h3>
-                    <p className="text-slate-500">{t('settings.notifDesc')}</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.notifPrefs}</h3>
+                    <p className="text-slate-500">{t.settings.notifDesc}</p>
                   </div>
 
                   <div className="divide-y divide-slate-100">
                     {[
-                      { id: 'email', title: t('settings.emailNotif'), desc: t('settings.emailNotifDesc'), icon: <Mail className="w-5 h-5" /> },
-                      { id: 'push', title: t('settings.pushNotif'), desc: t('settings.pushNotifDesc'), icon: <Bell className="w-5 h-5" /> },
-                      { id: 'sms', title: t('settings.smsNotif'), desc: t('settings.smsNotifDesc'), icon: <Phone className="w-5 h-5" /> },
-                      { id: 'marketing', title: t('settings.marketingNotif'), desc: t('settings.marketingNotifDesc'), icon: <Refresh className="w-5 h-5" /> },
+                      { id: 'email', title: t.settings.emailNotif, desc: t.settings.emailNotifDesc, icon: <Mail className="w-5 h-5" /> },
+                      { id: 'push', title: t.settings.pushNotif, desc: t.settings.pushNotifDesc, icon: <Bell className="w-5 h-5" /> },
+                      { id: 'sms', title: t.settings.smsNotif, desc: t.settings.smsNotifDesc, icon: <Phone className="w-5 h-5" /> },
+                      { id: 'marketing', title: t.settings.marketingNotif, desc: t.settings.marketingNotifDesc, icon: <Refresh className="w-5 h-5" /> },
                     ].map((item) => (
                       <div key={item.id} className="py-6 flex items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
@@ -388,7 +388,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       loading={isSaving}
                       className="w-full sm:w-auto px-10 py-4"
                     >
-                      {t('settings.saveNotif')}
+                      {t.settings.saveNotif}
                     </PremiumButton>
                   </div>
                 </motion.div>
@@ -403,13 +403,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                   className="space-y-8"
                 >
                   <div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t('settings.platformPrefs')}</h3>
-                    <p className="text-slate-500">{t('settings.platformDesc')}</p>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.platformPrefs}</h3>
+                    <p className="text-slate-500">{t.settings.platformDesc}</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.language')}</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.language}</label>
                       <div className="grid grid-cols-1 gap-2">
                         {[
                           { id: 'en', label: 'English', flag: '🇺🇸' },
@@ -437,27 +437,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
 
                     <div className="space-y-6">
                       <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.appearance')}</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.appearance}</label>
                         <div className="flex p-1 bg-slate-100 rounded-2xl">
                           <button 
                             onClick={() => setTheme('light')}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${theme === 'light' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                           >
                             <Sun className="w-4 h-4" />
-                            {t('settings.light')}
+                            {t.settings.light}
                           </button>
                           <button 
                             onClick={() => setTheme('dark')}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${theme === 'dark' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                           >
                             <Moon className="w-4 h-4" />
-                            {t('settings.dark')}
+                            {t.settings.dark}
                           </button>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('settings.timezone')}</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.timezone}</label>
                         <select 
                           value={timezone}
                           onChange={(e) => setTimezone(e.target.value)}
@@ -479,7 +479,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       loading={isSaving}
                       className="w-full sm:w-auto px-10 py-4"
                     >
-                      {t('settings.savePrefs')}
+                      {t.settings.savePrefs}
                     </PremiumButton>
                   </div>
                 </motion.div>
@@ -512,8 +512,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
               <Trash className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-rose-900">{t('settings.dangerZone')}</h4>
-              <p className="text-xs text-rose-600/70 max-w-sm">{t('settings.deleteDesc')}</p>
+              <h4 className="font-bold text-rose-900">{t.settings.dangerZone}</h4>
+              <p className="text-xs text-rose-600/70 max-w-sm">{t.settings.deleteDesc}</p>
             </div>
           </div>
           <PremiumButton 
@@ -522,7 +522,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
             className="px-8"
             onClick={() => setShowDeleteConfirm(true)}
           >
-            {t('settings.deleteAccount')}
+            {t.settings.deleteAccount}
           </PremiumButton>
         </div>
 
@@ -539,8 +539,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                 <div className="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-500 mb-6">
                   <Trash className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2">{t('settings.deleteConfirmTitle')}</h3>
-                <p className="text-slate-500 mb-8">{t('settings.deleteConfirmDesc')}</p>
+                <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.deleteConfirmTitle}</h3>
+                <p className="text-slate-500 mb-8">{t.settings.deleteConfirmDesc}</p>
                 
                 <div className="flex flex-col gap-3">
                   <PremiumButton 
@@ -549,13 +549,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                     loading={isSaving}
                     className="w-full py-4"
                   >
-                    {t('settings.deleteConfirmButton')}
+                    {t.settings.deleteConfirmButton}
                   </PremiumButton>
                   <button 
                     onClick={() => setShowDeleteConfirm(false)}
                     className="w-full py-4 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"
                   >
-                    {t('settings.cancel')}
+                    {t.settings.cancel}
                   </button>
                 </div>
               </motion.div>
