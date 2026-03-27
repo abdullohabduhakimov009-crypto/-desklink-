@@ -4,14 +4,10 @@ import {
   HiUser as User, 
   HiLockClosed as Lock, 
   HiBell as Bell, 
-  HiGlobeAlt as Globe, 
   HiCheckCircle as CheckCircle,
   HiExclamationCircle as AlertCircle,
   HiEye as Eye,
   HiEyeSlash as EyeOff,
-  HiLanguage as Language,
-  HiMoon as Moon,
-  HiSun as Sun,
   HiTrash as Trash,
   HiArrowPath as Refresh,
   HiShieldCheck as Shield
@@ -27,7 +23,7 @@ interface SettingsViewProps {
 
 const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
   const { language, setLanguage, t } = useLanguage();
-  const [activeSection, setActiveSection] = useState<'profile' | 'security' | 'notifications' | 'preferences'>('profile');
+  const [activeSection, setActiveSection] = useState<'profile' | 'security' | 'notifications'>('profile');
   const [isSaving, setIsSaving] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
@@ -52,9 +48,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
     marketing: currentUser?.notifications?.marketing ?? false
   });
 
-  // Preferences State
-  const [theme, setTheme] = useState<'light' | 'dark'>(currentUser?.preferences?.theme || 'light');
-  const [timezone, setTimezone] = useState(currentUser?.preferences?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleSaveProfile = async () => {
@@ -86,26 +79,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
       setStatus({ type: 'success', message: t.settings.successNotif });
     } catch (error) {
       setStatus({ type: 'error', message: t.settings.errorNotif });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleSavePreferences = async () => {
-    setIsSaving(true);
-    setStatus(null);
-    try {
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        preferences: {
-          theme,
-          timezone,
-          language
-        },
-        updatedAt: serverTimestamp()
-      });
-      setStatus({ type: 'success', message: t.settings.successPrefs });
-    } catch (error) {
-      setStatus({ type: 'error', message: t.settings.errorPrefs });
     } finally {
       setIsSaving(false);
     }
@@ -157,7 +130,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
     { id: 'profile', label: t.settings.profile, icon: <User className="w-5 h-5" /> },
     { id: 'security', label: t.settings.security, icon: <Lock className="w-5 h-5" /> },
     { id: 'notifications', label: t.settings.notifications, icon: <Bell className="w-5 h-5" /> },
-    { id: 'preferences', label: t.settings.preferences, icon: <Globe className="w-5 h-5" /> },
   ];
 
   return (
@@ -389,97 +361,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ currentUser, role }) => {
                       className="w-full sm:w-auto px-10 py-4"
                     >
                       {t.settings.saveNotif}
-                    </PremiumButton>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeSection === 'preferences' && (
-                <motion.div
-                  key="preferences"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
-                >
-                  <div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-2">{t.settings.platformPrefs}</h3>
-                    <p className="text-slate-500">{t.settings.platformDesc}</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.language}</label>
-                      <div className="grid grid-cols-1 gap-2">
-                        {[
-                          { id: 'en', label: 'English', flag: '🇺🇸' },
-                          { id: 'ru', label: 'Русский', flag: '🇷🇺' },
-                          { id: 'uz', label: 'O\'zbekcha', flag: '🇺🇿' },
-                        ].map((lang) => (
-                          <button
-                            key={lang.id}
-                            onClick={() => setLanguage(lang.id as any)}
-                            className={`flex items-center justify-between px-5 py-4 rounded-2xl border transition-all ${
-                              language === lang.id 
-                                ? 'bg-brand-teal/5 border-brand-teal text-brand-dark font-bold' 
-                                : 'bg-white border-slate-100 text-slate-600 hover:border-slate-200'
-                            }`}
-                          >
-                            <span className="flex items-center gap-3">
-                              <span className="text-lg">{lang.flag}</span>
-                              {lang.label}
-                            </span>
-                            {language === lang.id && <CheckCircle className="w-5 h-5 text-brand-teal" />}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.appearance}</label>
-                        <div className="flex p-1 bg-slate-100 rounded-2xl">
-                          <button 
-                            onClick={() => setTheme('light')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${theme === 'light' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                          >
-                            <Sun className="w-4 h-4" />
-                            {t.settings.light}
-                          </button>
-                          <button 
-                            onClick={() => setTheme('dark')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold transition-all ${theme === 'dark' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                          >
-                            <Moon className="w-4 h-4" />
-                            {t.settings.dark}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t.settings.timezone}</label>
-                        <select 
-                          value={timezone}
-                          onChange={(e) => setTimezone(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-brand-teal/50 transition-all appearance-none"
-                        >
-                          <option value="UTC">UTC (GMT+0)</option>
-                          <option value="America/New_York">Eastern Time (GMT-5)</option>
-                          <option value="Europe/London">London (GMT+0)</option>
-                          <option value="Asia/Tashkent">Tashkent (GMT+5)</option>
-                          <option value="Asia/Dubai">Dubai (GMT+4)</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4">
-                    <PremiumButton 
-                      onClick={handleSavePreferences}
-                      loading={isSaving}
-                      className="w-full sm:w-auto px-10 py-4"
-                    >
-                      {t.settings.savePrefs}
                     </PremiumButton>
                   </div>
                 </motion.div>

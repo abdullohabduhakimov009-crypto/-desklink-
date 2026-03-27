@@ -99,6 +99,7 @@ import {
 
 import TicketDetailView from './TicketDetailView';
 import OpportunityDetailView from './OpportunityDetailView';
+import BillingInvoices from './BillingInvoices';
 
 interface AdminPortalProps {
   user: any;
@@ -588,6 +589,35 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ user, onLogout }) => {
       });
     } catch (err) {
       handleFirestoreError(err, OperationType.CREATE, "invoices");
+    }
+  };
+
+  const handleUpdateInvoiceStatus = async (id: string, status: string) => {
+    try {
+      await updateDoc(doc(db, "invoices", id), { 
+        status, 
+        updatedAt: serverTimestamp() 
+      });
+      addNotification({
+        type: 'success',
+        title: 'Invoice Updated',
+        message: `Invoice marked as ${status.toLowerCase()}.`
+      });
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, "invoices");
+    }
+  };
+
+  const handleDeleteInvoice = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "invoices", id));
+      addNotification({
+        type: 'success',
+        title: 'Invoice Deleted',
+        message: 'The invoice has been removed.'
+      });
+    } catch (err) {
+      handleFirestoreError(err, OperationType.DELETE, "invoices");
     }
   };
 
@@ -2324,143 +2354,13 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ user, onLogout }) => {
         };
         return <MessagingSystem currentUser={adminUser} role="admin" allUsers={users} />;
       case 'Billing & Invoices':
-        const totalOutstanding = invoices.filter(i => i.status !== 'Paid').reduce((sum, i) => sum + parseFloat(i.amount.replace(/[^0-9.]/g, '') || '0'), 0);
-        const paidThisMonth = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + parseFloat(i.amount.replace(/[^0-9.]/g, '') || '0'), 0);
-        const overdueCount = invoices.filter(i => i.status === 'Overdue').length;
-
         return (
-          <div className="space-y-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">Billing & Invoices</h2>
-                <p className="text-sm text-slate-500">Manage client payments and financial records</p>
-              </div>
-              <button 
-                onClick={() => setShowAddInvoiceModal(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20"
-              >
-                <PlusSquare className="w-5 h-5" />
-                <span>Create Invoice</span>
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Outstanding</p>
-                <div className="text-3xl font-bold text-slate-900">${totalOutstanding.toLocaleString()}</div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Paid This Month</p>
-                <div className="text-3xl font-bold text-emerald-500">${paidThisMonth.toLocaleString()}</div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Overdue Invoices</p>
-                <div className="text-3xl font-bold text-rose-500">{overdueCount}</div>
-              </div>
-            </div>
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                <h3 className="font-bold text-black">Recent Invoices</h3>
-                <button className="text-brand-teal text-sm font-bold hover:underline">View All</button>
-              </div>
-              <div className="divide-y divide-slate-100">
-                {invoices.map((inv) => (
-                  <div key={inv.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-colors group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:shadow-sm transition-all">
-                        <CreditCard className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-900">{inv.clientName}</p>
-                        <p className="text-xs text-slate-400">INV-{inv.id.slice(0, 4).toUpperCase()} • {inv.createdAt ? (inv.createdAt.toDate ? inv.createdAt.toDate().toLocaleDateString() : new Date(inv.createdAt).toLocaleDateString()) : 'N/A'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-8">
-                      <div className="text-right">
-                        <p className="font-bold text-slate-900">{inv.amount}</p>
-                        <span className={`text-[10px] font-bold uppercase ${
-                          inv.status === 'Paid' ? 'text-emerald-500' : 
-                          inv.status === 'Overdue' ? 'text-rose-500' : 'text-orange-500'
-                        }`}>
-                          {inv.status}
-                        </span>
-                      </div>
-                      <div className="relative inline-block text-left">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenUserMenuId(openUserMenuId === inv.id ? null : inv.id);
-                          }}
-                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                        
-                        <AnimatePresence>
-                          {openUserMenuId === inv.id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setOpenUserMenuId(null)} />
-                              <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 py-2 overflow-hidden text-left"
-                              >
-                                <button 
-                                  onClick={() => {
-                                    // View invoice logic
-                                    setOpenUserMenuId(null);
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-sm text-slate-600 hover:bg-slate-50 flex items-center gap-2"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                  View Invoice
-                                </button>
-                                {inv.status !== 'Paid' && (
-                                  <button 
-                                    onClick={async () => {
-                                      await updateDoc(doc(db, "invoices", inv.id), { status: 'Paid', updatedAt: serverTimestamp() });
-                                      setOpenUserMenuId(null);
-                                      addNotification({
-                                        type: 'success',
-                                        title: 'Invoice Paid',
-                                        message: 'The invoice has been marked as paid.'
-                                      });
-                                    }}
-                                    className="w-full px-4 py-2 text-left text-sm text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
-                                  >
-                                    <CheckCircle className="w-4 h-4" />
-                                    Mark as Paid
-                                  </button>
-                                )}
-                                <button 
-                                  onClick={async () => {
-                                    if (window.confirm('Are you sure you want to delete this invoice?')) {
-                                      await deleteDoc(doc(db, "invoices", inv.id));
-                                      setOpenUserMenuId(null);
-                                      addNotification({
-                                        type: 'success',
-                                        title: 'Invoice Deleted',
-                                        message: 'The invoice has been removed.'
-                                      });
-                                    }
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete Invoice
-                                </button>
-                              </motion.div>
-                            </>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <BillingInvoices 
+            invoices={invoices}
+            setShowAddInvoiceModal={setShowAddInvoiceModal}
+            onUpdateInvoiceStatus={handleUpdateInvoiceStatus}
+            onDeleteInvoice={handleDeleteInvoice}
+          />
         );
       case 'Settings':
         return <SettingsView currentUser={user} role="admin" />;
